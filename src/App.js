@@ -40,34 +40,52 @@ export default function App() {
     console.log(r1, r2, r3);
     for (let i = 0; i < 3; i++) {
       if (r1[i] && r2[i] && r3[i] && r1[i] === r2[i] && r2[i] === r3[i]) {
-        return true;
+        return [true, r1[0]];
       }
     }
-    return false;
+    return [false, null];
   };
 
   const horizontalCheck = () => {
-    const [r1, r2, r3] = gameBoard;
-    console.log(r1, r2, r3);
     for (let i = 0; i < 3; i++) {
-      if (r1[i] && r2[i] && r3[i] && r1[i] === r2[i] && r2[i] === r3[i]) {
-        return true;
+      const row = gameBoard[i];
+      const StartCase = row[0];
+      const isWinner = row.every((v) => v && v === StartCase);
+      if (isWinner) {
+        return [true, StartCase];
       }
     }
-    return false;
+    return [false, null];
   };
 
   const checkWinner = () => {
     //vertical check
-    if (verticalCheck()) {
-      console.log('vertical winner');
+
+    let [isWinner, Winner] = verticalCheck();
+    if (isWinner) {
+      alert('Winner is ' + Winner);
+      resetBoard();
+      return;
     }
+    [isWinner, Winner] = horizontalCheck();
+    if (isWinner) {
+      alert('Winner is ' + Winner);
+      resetBoard();
+    }
+  };
+
+  const resetBoard = () => {
+    updateBoard([...gameBoard.map(() => ['', '', ''])]);
+    updatePlayerTurn(players.player_1);
   };
 
   useEffect(() => {
     //logic checking winner losing or game is finished
+
+    checkWinner();
+
     if (checkGameFinished()) {
-      checkWinner();
+      resetBoard();
     }
 
     //finished -> all items in the array are filled
